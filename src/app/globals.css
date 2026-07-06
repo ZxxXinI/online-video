@@ -1,0 +1,136 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f4f6f8;
+  --surface: #ffffff;
+  --surface-muted: #eef1f4;
+  --text: #172033;
+  --text-muted: #697386;
+  --border: #e2e7ec;
+  --accent: #f04444;
+  --accent-strong: #e32636;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--background);
+}
+
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--text);
+  font-family: Arial, "Microsoft YaHei", "PingFang SC", sans-serif;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+a {
+  text-decoration: none;
+}
+
+.poster-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px 10px;
+}
+
+@media (min-width: 640px) {
+  .poster-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 24px 16px;
+  }
+}
+
+@media (min-width: 1180px) {
+  .poster-grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 28px 18px;
+  }
+}
+
+.poster-card {
+  min-width: 0;
+}
+
+.poster-frame {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  border-radius: 7px;
+  background: #e7ebef;
+  box-shadow: 0 5px 16px rgb(23 32 51 / 8%);
+}
+
+.poster-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 180ms ease;
+}
+
+.poster-card:hover .poster-frame img,
+.poster-card:focus-visible .poster-frame img {
+  transform: scale(1.035);
+}
+
+.poster-card:focus-visible {
+  outline: 3px solid rgb(240 68 68 / 35%);
+  outline-offset: 4px;
+  border-radius: 7px;
+}
+
+.poster-remark {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: 18px 7px 7px;
+  overflow: hidden;
+  color: white;
+  background: linear-gradient(transparent, rgb(0 0 0 / 78%));
+  font-size: 12px;
+  line-height: 1.3;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.poster-title {
+  margin-top: 9px;
+  overflow: hidden;
+  font-size: 14px;
+  line-height: 1.4;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #e8ebee 25%, #f3f5f7 50%, #e8ebee 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+}
+
+@keyframes shimmer {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition: none !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
