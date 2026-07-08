@@ -8,12 +8,15 @@ import { aggregateMovieDetail } from "@/lib/mac-cms";
 import { getSource } from "@/lib/sources";
 import type { SourceId } from "@/lib/types";
 
-interface DetailPageProps { params: Promise<{ source: string; id: string }> }
+interface DetailPageProps {
+  params: Promise<{ source: string; id: string }>;
+}
 
 export async function generateMetadata({ params }: DetailPageProps): Promise<Metadata> {
   const { source, id } = await params;
   const definition = getSource(source);
   if (!definition) return { title: "影视详情" };
+
   const movie = await aggregateMovieDetail(definition.id, id);
   return movie ? { title: movie.name, description: movie.summary.slice(0, 150) } : { title: "影视详情" };
 }
@@ -22,44 +25,98 @@ export default async function DetailPage({ params }: DetailPageProps) {
   const { source, id } = await params;
   const definition = getSource(source);
   if (!definition) notFound();
+
   const movie = await aggregateMovieDetail(definition.id as SourceId, id);
   if (!movie) notFound();
 
+  const firstPlayable = movie.playbackLines[0];
+
   return (
     <SiteShell>
-      <article>
-        <section className="grid gap-7 rounded-lg border border-[#e2e7ec] bg-white p-5 shadow-sm md:grid-cols-[210px_minmax(0,1fr)] md:p-7">
-          <div className="poster-frame mx-auto w-full max-w-[230px] md:mx-0">
-            <PosterImage src={movie.cover} alt={movie.name} />
-          </div>
-          <div className="min-w-0">
-            <div className="mb-4 flex flex-wrap items-center gap-2">
-              <span className="rounded bg-[#f04444] px-2 py-1 text-xs font-bold text-white">{movie.typeName || "影视"}</span>
-              {movie.score && <span className="text-sm font-bold text-[#ef3340]">{movie.score} 分</span>}
+      <article className="space-y-11">
+        <section className="panel-raised rounded-[var(--radius-lg)] p-5 md:p-8">
+          <div className="grid gap-7 md:grid-cols-[260px_minmax(0,1fr)] md:items-start">
+            <div className="poster-frame mx-auto w-full max-w-[260px] md:mx-0">
+              <PosterImage src={movie.cover} alt={movie.name} />
+              {movie.score && Number(movie.score) > 0 ? <span className="poster-score">{movie.score}</span> : null}
+              {movie.remarks ? <span className="poster-remark">{movie.remarks}</span> : null}
             </div>
-            <h1 className="text-3xl font-black md:text-4xl">{movie.name}</h1>
-            <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm text-[#697386]">
-              {movie.year && <span className="flex items-center gap-1.5"><Calendar size={15} />{movie.year}</span>}
-              {movie.area && <span className="flex items-center gap-1.5"><MapPin size={15} />{movie.area}</span>}
-              {movie.actor && <span className="flex items-center gap-1.5"><UserRound size={15} />{movie.actor}</span>}
+
+            <div className="min-w-0">
+              <div className="hero-eyebrow">{movie.typeName || "影视"}</div>
+              <h1 className="mt-5 text-3xl font-black md:text-5xl">{movie.name}</h1>
+
+              <div className="mt-5 flex flex-wrap gap-x-5 gap-y-3 text-sm text-[var(--text-secondary)]">
+                {movie.year ? (
+                  <span className="flex items-center gap-1.5">
+                    <Calendar size={15} aria-hidden="true" />
+                    {movie.year}
+                  </span>
+                ) : null}
+                {movie.area ? (
+                  <span className="flex items-center gap-1.5">
+                    <MapPin size={15} aria-hidden="true" />
+                    {movie.area}
+                  </span>
+                ) : null}
+                {movie.actor ? (
+                  <span className="flex items-center gap-1.5">
+                    <UserRound size={15} aria-hidden="true" />
+                    {movie.actor}
+                  </span>
+                ) : null}
+              </div>
+
+              <p className="mt-6 max-w-[760px] text-[15px] leading-8 text-[var(--text-secondary)]">
+                {movie.summary || "暂无剧情简介。"}
+              </p>
+
+              <dl className="mt-6 grid gap-3 text-sm sm:grid-cols-2">
+                {movie.director ? (
+                  <div className="panel rounded-[var(--radius-md)] px-4 py-3">
+                    <dt className="text-xs font-bold uppercase tracking-[0.18em] text-[var(--text-tertiary)]">导演</dt>
+                    <dd className="mt-2 text-[var(--text-secondary)]">{movie.director}</dd>
+                  </div>
+                ) : null}
+                {movie.language ? (
+                  <div className="panel rounded-[var(--radius-md)] px-4 py-3">
+                    <dt className="text-xs font-bold uppercase tracking-[0.18em] text-[var(--text-tertiary)]">语言</dt>
+                    <dd className="mt-2 text-[var(--text-secondary)]">{movie.language}</dd>
+                  </div>
+                ) : null}
+                {movie.updatedAt ? (
+                  <div className="panel rounded-[var(--radius-md)] px-4 py-3">
+                    <dt className="text-xs font-bold uppercase tracking-[0.18em] text-[var(--text-tertiary)]">更新</dt>
+                    <dd className="mt-2 text-[var(--text-secondary)]">{movie.updatedAt}</dd>
+                  </div>
+                ) : null}
+                {movie.releaseDate ? (
+                  <div className="panel rounded-[var(--radius-md)] px-4 py-3">
+                    <dt className="text-xs font-bold uppercase tracking-[0.18em] text-[var(--text-tertiary)]">上映</dt>
+                    <dd className="mt-2 text-[var(--text-secondary)]">{movie.releaseDate}</dd>
+                  </div>
+                ) : null}
+              </dl>
+
+              {firstPlayable ? (
+                <a href={`/watch/${firstPlayable.sourceId}/${firstPlayable.movieId}/1`} className="button-primary mt-7">
+                  <Play size={18} fill="currentColor" aria-hidden="true" />
+                  立即播放
+                </a>
+              ) : null}
             </div>
-            <p className="mt-5 line-clamp-5 text-[15px] leading-7 text-[#4d5868]">{movie.summary || "暂无剧情简介。"}</p>
-            <dl className="mt-5 grid gap-2 text-sm sm:grid-cols-2">
-              {movie.director && <div><dt className="inline font-semibold">导演：</dt><dd className="inline text-[#697386]">{movie.director}</dd></div>}
-              {movie.language && <div><dt className="inline font-semibold">语言：</dt><dd className="inline text-[#697386]">{movie.language}</dd></div>}
-              {movie.updatedAt && <div><dt className="inline font-semibold">更新：</dt><dd className="inline text-[#697386]">{movie.updatedAt}</dd></div>}
-            </dl>
-            {movie.playbackLines[0] && (
-              <a href={`/watch/${movie.playbackLines[0].sourceId}/${movie.playbackLines[0].movieId}/1`} className="mt-6 inline-flex items-center gap-2 rounded-md bg-[#f04444] px-5 py-3 text-sm font-bold text-white shadow-lg shadow-red-200 hover:bg-[#e32636]">
-                <Play size={18} fill="currentColor" /> 立即播放
-              </a>
-            )}
           </div>
         </section>
 
-        <section className="mt-10">
-          <h2 className="mb-5 text-2xl font-black">播放线路与选集</h2>
-          <EpisodeSelector lines={movie.playbackLines} />
+        <section>
+          <div className="section-divider" />
+          <h2 className="text-[28px] font-black tracking-tight md:text-[32px]">播放线路与选集</h2>
+          <p className="mt-3 text-sm leading-7 text-[var(--text-secondary)]">
+            详情页按片名聚合多个数据源，只显示真实匹配到内容的线路。优先选择对应线路后再进入具体剧集。
+          </p>
+          <div className="mt-6">
+            <EpisodeSelector lines={movie.playbackLines} />
+          </div>
         </section>
       </article>
     </SiteShell>

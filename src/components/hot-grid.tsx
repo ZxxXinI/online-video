@@ -14,6 +14,7 @@ export function HotGrid({ items }: { items: HotRecommendation[] }) {
   async function openItem(item: HotRecommendation) {
     setLoadingId(item.id);
     setNotice("");
+
     try {
       const response = await fetch(`/api/resolve?q=${encodeURIComponent(item.name)}`);
       const result = (await response.json()) as { found: boolean; href?: string };
@@ -31,30 +32,40 @@ export function HotGrid({ items }: { items: HotRecommendation[] }) {
 
   return (
     <>
-      {notice && (
-        <div role="status" className="mb-4 rounded-md border border-[#ffc9c9] bg-[#fff1f1] px-4 py-3 text-sm text-[#c62835]">
+      {notice ? (
+        <div
+          role="status"
+          className="mb-5 rounded-[var(--radius-lg)] border border-[var(--danger)] bg-[var(--danger-soft)] px-4 py-3 text-sm font-medium text-[var(--danger)]"
+        >
           {notice}
         </div>
-      )}
+      ) : null}
+
       <div className="poster-grid">
         {items.map((item) => (
           <button
             key={item.id}
             type="button"
             onClick={() => openItem(item)}
-            className="poster-card cursor-pointer border-0 bg-transparent p-0 text-left"
+            className="poster-card cursor-pointer border-0 bg-transparent p-0 text-left text-[var(--text)]"
             title={item.name}
           >
             <div className="poster-frame">
               <PosterImage src={item.cover} alt={item.name} />
-              {item.remarks && <span className="poster-remark">{item.remarks}</span>}
-              {loadingId === item.id && (
-                <span className="absolute inset-0 flex items-center justify-center bg-black/45 text-white">
+              {item.remarks ? <span className="poster-remark">{item.remarks}</span> : null}
+              {loadingId === item.id ? (
+                <span className="absolute inset-0 z-10 flex items-center justify-center bg-black/50 text-white">
                   <LoaderCircle className="animate-spin" aria-label="正在查询资源" />
                 </span>
-              )}
+              ) : null}
             </div>
-            <div className="poster-title">{item.name}</div>
+            <div className="poster-copy">
+              <div className="poster-title">{item.name}</div>
+              <div className="poster-meta-row">
+                <span>热播排序参考</span>
+                {item.remarks ? <span>{item.remarks}</span> : null}
+              </div>
+            </div>
           </button>
         ))}
       </div>

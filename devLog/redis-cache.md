@@ -1,0 +1,44 @@
+# Redis Server Cache - 2026-07-08
+
+## File Changes
+
+- `package.json` / `pnpm-lock.yaml`
+  - Reason / Purpose: Add `ioredis` for TLS Redis access.
+- `.env.example`
+  - Reason / Purpose: Document Redis connection variables using placeholders only.
+- `.gitignore`
+  - Reason / Purpose: Ignore local `ca.crt` so the Redis CA certificate is not committed.
+- `src/lib/cache/redis.ts`
+  - Reason / Purpose: Create the optional Redis client and support host, port, TLS, CA, and hostname-verification configuration.
+- `src/lib/cache/json-cache.ts`
+  - Reason / Purpose: Provide safe JSON cache get, set, and get-or-set helpers.
+- `src/lib/cache/keys.ts`
+  - Reason / Purpose: Centralize cache key names for home, title resolve, and detail aggregation data.
+- `src/lib/cache/ttl.ts`
+  - Reason / Purpose: Implement 20-hour TTL plus random 10 to 20 minute jitter, with shorter miss caching.
+- `src/lib/home-cache.ts`
+  - Reason / Purpose: Cache home category blocks.
+- `src/lib/hot.ts`
+  - Reason / Purpose: Cache scraped hot recommendations.
+- `src/lib/mac-cms.ts`
+  - Reason / Purpose: Cache title resolution and aggregated detail results.
+- `src/app/page.tsx`
+  - Reason / Purpose: Use cached home category loaders.
+- `docs/redis-cache.md`
+  - Reason / Purpose: Document cache coverage, TTL, TLS settings, and fallback behavior.
+- `README.md`
+  - Reason / Purpose: Add Redis cache documentation entry.
+- `devLog/README.md`
+  - Reason / Purpose: Add timeline entries for Redis cache work.
+
+## Bug Record
+
+- Time: 2026-07-08 11:25
+- Symptoms: Redis TCP connection and password authentication worked, but the project cache client failed with `Hostname/IP does not match certificate's altnames` when connecting by IP.
+- Attempted fix: Added `REDIS_TLS_REJECT_UNAUTHORIZED` support in `src/lib/cache/redis.ts`, documented the IP + TLS certificate mismatch case, and kept strict verification as the default.
+- Temporary solution: Set `REDIS_TLS_REJECT_UNAUTHORIZED=false` in local `.env.local` when connecting by IP to a TLS Redis server whose certificate does not include that IP.
+
+## Navigation
+
+- Master doc: `devLog/README.md`
+- Branch doc: `devLog/redis-cache.md`

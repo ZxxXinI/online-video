@@ -2,12 +2,16 @@ import Link from "next/link";
 
 export default function NotFound() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#f4f6f8] p-6 text-center">
-      <div>
-        <div className="text-7xl font-black text-[#ef3340]">404</div>
-        <h1 className="mt-3 text-2xl font-bold">没有找到这个页面</h1>
-        <p className="mt-2 text-sm text-[#697386]">内容可能已下线，或者地址输入有误。</p>
-        <Link href="/" className="mt-6 inline-block rounded-md bg-[#f04444] px-5 py-2.5 text-sm font-semibold text-white">返回首页</Link>
+    <div className="flex min-h-screen items-center justify-center bg-[var(--canvas)] p-6 text-center">
+      <div className="panel-raised w-full max-w-[560px] rounded-[var(--radius-lg)] p-8">
+        <div className="text-7xl font-black text-[var(--accent)]">404</div>
+        <h1 className="mt-4 text-3xl font-black">没有找到这个页面</h1>
+        <p className="mt-3 text-sm leading-7 text-[var(--text-secondary)]">
+          内容可能已经下线，或者当前地址输入有误。可以先返回首页继续浏览热播和分类内容。
+        </p>
+        <Link href="/" className="button-primary mt-7">
+          返回首页
+        </Link>
       </div>
     </div>
   );

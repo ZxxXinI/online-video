@@ -8,8 +8,13 @@ export function PosterImage({ src, alt }: { src: string; alt: string }) {
 
   if (failed) {
     return (
-      <div className="flex h-full w-full items-center justify-center bg-[#e7ebef] p-3 text-center text-2xl font-bold text-[#7a8492]">
-        {alt.slice(0, 6)}
+      <div className="flex h-full w-full items-center justify-center bg-[linear-gradient(180deg,color-mix(in_srgb,var(--surface-subtle)_92%,transparent),color-mix(in_srgb,var(--canvas)_76%,transparent))] p-4 text-center">
+        <div>
+          <div className="text-2xl font-black tracking-tight text-[var(--text-secondary)]">{alt.slice(0, 6)}</div>
+          <div className="mt-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--text-tertiary)]">
+            online cinema
+          </div>
+        </div>
       </div>
     );
   }

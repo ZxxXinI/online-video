@@ -1,4 +1,7 @@
 import { z } from "zod";
+import { getJsonCache, setJsonCache } from "@/lib/cache/json-cache";
+import { cacheKeys } from "@/lib/cache/keys";
+import { longContentTtl, shortMissTtl } from "@/lib/cache/ttl";
 import { cleanHtml, isBlockedCategory, isBlockedContent, normalizeTitle } from "@/lib/content";
 import { parsePlaybackGroups, selectPreferredGroup } from "@/lib/playback";
 import { DEFAULT_SOURCE_ID, getSource, SOURCES } from "@/lib/sources";
@@ -72,6 +75,11 @@ interface RequestOptions {
   keyword?: string;
   ids?: string;
   revalidate?: number;
+}
+
+interface ResolveCacheValue {
+  found: boolean;
+  movie: MovieSummary | null;
 }
 
 export async function listMovies(options: RequestOptions = {}): Promise<MoviePage> {
@@ -157,12 +165,22 @@ export async function getMovieDetail(sourceId: SourceId, id: string) {
 }
 
 export async function resolveMovieByTitle(title: string) {
+  const key = cacheKeys.resolveTitle(title);
+  const cached = await getJsonCache<ResolveCacheValue>(key);
+  if (cached) return cached.movie;
+
   const results = await searchMovies(title, DEFAULT_SOURCE_ID);
   const normalized = normalizeTitle(title);
-  return results.items.find((movie) => normalizeTitle(movie.name) === normalized) ?? null;
+  const movie = results.items.find((item) => normalizeTitle(item.name) === normalized) ?? null;
+  await setJsonCache(key, { found: Boolean(movie), movie }, movie ? longContentTtl() : shortMissTtl());
+  return movie;
 }
 
 export async function aggregateMovieDetail(sourceId: SourceId, id: string) {
+  const key = cacheKeys.detail(sourceId, id);
+  const cached = await getJsonCache<MovieDetail | null>(key);
+  if (cached) return cached;
+
   const primary = await getMovieDetail(sourceId, id);
   if (!primary) return null;
 
@@ -179,12 +197,14 @@ export async function aggregateMovieDetail(sourceId: SourceId, id: string) {
   ];
   const sourceOrder = new Map(SOURCES.map((source, index) => [source.id, index]));
 
-  return {
+  const detail = {
     ...primary,
     playbackLines: lines
       .filter((line, index, all) => all.findIndex((item) => item.sourceId === line.sourceId) === index)
       .sort((a, b) => (sourceOrder.get(a.sourceId) ?? 99) - (sourceOrder.get(b.sourceId) ?? 99)),
   };
+  await setJsonCache(key, detail, longContentTtl());
+  return detail;
 }
 
 async function findMatchingLine(source: SourceDefinition, title: string) {

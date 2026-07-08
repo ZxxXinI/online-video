@@ -1,4 +1,7 @@
 import * as cheerio from "cheerio";
+import { getOrSetJsonCache } from "@/lib/cache/json-cache";
+import { cacheKeys } from "@/lib/cache/keys";
+import { longContentTtl } from "@/lib/cache/ttl";
 import { isBlockedContent } from "@/lib/content";
 import { listMovies } from "@/lib/mac-cms";
 import type { HotRecommendation } from "@/lib/types";
@@ -31,6 +34,10 @@ export function parseHotRecommendations(html: string): HotRecommendation[] {
 }
 
 export async function getHotRecommendations() {
+  return getOrSetJsonCache(cacheKeys.homeHot(), longContentTtl(), loadHotRecommendations);
+}
+
+async function loadHotRecommendations() {
   try {
     const response = await fetch(HOT_URL, {
       headers: { "User-Agent": "Mozilla/5.0 OnlineCinema/1.0" },

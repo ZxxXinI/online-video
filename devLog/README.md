@@ -1,16 +1,22 @@
-# 在线影院开发日志
+# Online Video Dev Log
 
-## 时间线
+## Timeline
 
-| 时间 | 模块 | 内容 | 详细记录 |
+| Time | Module | Summary | Detail |
 | --- | --- | --- | --- |
-| 2026-07-06 09:59 | 第一版基础闭环 | 初始化独立仓库，完成数据层、响应式页面、播放器、测试和 Docker | [initial-release.md](initial-release.md) |
-| 2026-07-06 10:14 | 验收修整 | 修复品牌颜色、MacCMS 海报字段和一级分类聚合 | [initial-release.md](initial-release.md) |
+| 2026-07-06 09:59 | Initial release | Initialized the standalone Next.js project with data, pages, player, tests, and Docker support. | [initial-release.md](initial-release.md) |
+| 2026-07-06 10:14 | Acceptance fixes | Fixed brand color, MacCMS poster fields, and top-level category aggregation. | [initial-release.md](initial-release.md) |
+| 2026-07-06 16:09 | Astryx redesign | Added semantic theme, light/dark modes, and shared component states. | [astryx-redesign.md](astryx-redesign.md) |
+| 2026-07-07 20:30 | Cinema redesign | Rebuilt the UI around a dark cinema layout inspired by Spotify and PlayStation interaction patterns. | [cinema-redesign.md](cinema-redesign.md) |
+| 2026-07-08 10:45 | Redis server cache | Added optional Redis TLS caching for hot lists, home categories, title resolve, and detail aggregation. | [redis-cache.md](redis-cache.md) |
+| 2026-07-08 11:25 | Redis TLS fix | Added `REDIS_TLS_REJECT_UNAUTHORIZED` for IP-based TLS Redis deployments with certificate hostname mismatch. | [redis-cache.md](redis-cache.md) |
 
-## 模块导航
+## Module Map
 
-- 数据与采集：`src/lib/`
-- 页面与接口：`src/app/`
-- 视觉与交互：`src/components/`
-- 测试：`src/**/*.test.ts`、`tests/e2e/`
-- 部署：`Dockerfile`、`.dockerignore`
+- Data and scraping: `src/lib/`
+- Pages and APIs: `src/app/`
+- Visual and interaction components: `src/components/`
+- Tests: `src/**/*.test.ts`, `tests/e2e/`
+- Deployment: `Dockerfile`, `.dockerignore`
+- Design system: `DESIGN.md`, `src/app/globals.css`
+- Cache docs: `docs/redis-cache.md`
