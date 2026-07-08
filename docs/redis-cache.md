@@ -29,6 +29,9 @@ REDIS_DB=0
 REDIS_TLS=true
 REDIS_CA_PATH=ca.crt
 REDIS_TLS_REJECT_UNAUTHORIZED=true
+REDIS_CONNECT_TIMEOUT_MS=8000
+REDIS_COMMAND_TIMEOUT_MS=8000
+REDIS_KEEP_ALIVE_MS=30000
 ```
 
 Equivalent command:
@@ -55,6 +58,20 @@ REDIS_TLS_REJECT_UNAUTHORIZED=false
 ```
 
 Keep it as `true` when using a domain name that matches the Redis certificate.
+
+## Public Network Stability
+
+For public Redis over TLS, idle NAT or gateway connections may become half-open. The app enables TCP keep-alive and resets the cached Redis client after command timeout errors so the next request can create a fresh connection.
+
+Useful variables:
+
+```env
+REDIS_CONNECT_TIMEOUT_MS=8000
+REDIS_COMMAND_TIMEOUT_MS=8000
+REDIS_KEEP_ALIVE_MS=30000
+```
+
+If Redis is far away or often slow, increase `REDIS_COMMAND_TIMEOUT_MS` to `10000` or `15000`.
 
 ## Fallback Strategy
 

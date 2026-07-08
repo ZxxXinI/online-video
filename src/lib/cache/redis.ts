@@ -49,8 +49,9 @@ export function getRedisClient() {
   const baseOptions = {
     lazyConnect: true,
     maxRetriesPerRequest: 1,
-    connectTimeout: 2_000,
-    commandTimeout: 2_000,
+    connectTimeout: Number(process.env.REDIS_CONNECT_TIMEOUT_MS || 8_000),
+    commandTimeout: Number(process.env.REDIS_COMMAND_TIMEOUT_MS || 8_000),
+    keepAlive: Number(process.env.REDIS_KEEP_ALIVE_MS || 30_000),
     enableOfflineQueue: false,
   } satisfies RedisOptions;
 
@@ -63,6 +64,12 @@ export function getRedisClient() {
   });
 
   return client;
+}
+
+export function resetRedisClient() {
+  if (!client) return;
+  client.disconnect();
+  client = undefined;
 }
 
 export async function ensureRedisClient() {

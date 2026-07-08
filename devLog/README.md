@@ -12,6 +12,7 @@
 | 2026-07-08 11:25 | Redis TLS fix | Added `REDIS_TLS_REJECT_UNAUTHORIZED` for IP-based TLS Redis deployments with certificate hostname mismatch. | [redis-cache.md](redis-cache.md) |
 | 2026-07-08 11:52 | Next data cache fix | Disabled Next.js built-in fetch caching for large external source responses while keeping Redis as the application cache. | [redis-cache.md](redis-cache.md) |
 | 2026-07-08 15:05 | Redis reconnect fix | Reconnected or rebuilt Redis clients after idle/network close states so cache writes keep working over time. | [redis-cache.md](redis-cache.md) |
+| 2026-07-08 15:32 | Redis timeout hardening | Added keep-alive, configurable Redis timeouts, and timeout-triggered client reset for public TLS Redis stability. | [redis-cache.md](redis-cache.md) |
 
 ## Module Map
 

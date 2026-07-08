@@ -48,6 +48,11 @@
 - Attempted fix: Added `ensureRedisClient()` to reconnect or rebuild the Redis client when the cached ioredis instance is no longer `ready`. Cache reads and writes now use this helper instead of only connecting from the initial `wait` state.
 - Temporary solution: Redeploy the container after pulling this change. Existing Redis keys do not need manual migration.
 
+- Time: 2026-07-08 15:32
+- Symptoms: Redis worked on the first visit, then a few minutes later cache reads and writes failed with `Command timed out` while the external Redis service was still reachable.
+- Attempted fix: Added TCP keep-alive, configurable connect/command timeouts, and timeout-triggered Redis client reset. This handles half-open public TLS connections by forcing the next request to create a fresh Redis connection.
+- Temporary solution: Redeploy the container after pulling this change. If the Redis network is still slow, increase `REDIS_COMMAND_TIMEOUT_MS` in `.env.production`.
+
 ## Navigation
 
 - Master doc: `devLog/README.md`
