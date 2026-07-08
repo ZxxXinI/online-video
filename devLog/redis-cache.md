@@ -38,6 +38,11 @@
 - Attempted fix: Added `REDIS_TLS_REJECT_UNAUTHORIZED` support in `src/lib/cache/redis.ts`, documented the IP + TLS certificate mismatch case, and kept strict verification as the default.
 - Temporary solution: Set `REDIS_TLS_REJECT_UNAUTHORIZED=false` in local `.env.local` when connecting by IP to a TLS Redis server whose certificate does not include that IP.
 
+- Time: 2026-07-08 11:52
+- Symptoms: Docker logs showed `Failed to set Next.js data cache ... items over 2MB can not be cached` for large MacCMS responses.
+- Attempted fix: Changed MacCMS and hot-source fetches to `cache: "no-store"` so Next.js does not cache raw external responses. Redis remains the explicit application cache for processed results.
+- Temporary solution: None. Redeploy the container after pulling this change.
+
 ## Navigation
 
 - Master doc: `devLog/README.md`

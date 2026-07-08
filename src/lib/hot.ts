@@ -40,8 +40,8 @@ export async function getHotRecommendations() {
 async function loadHotRecommendations() {
   try {
     const response = await fetch(HOT_URL, {
+      cache: "no-store",
       headers: { "User-Agent": "Mozilla/5.0 OnlineCinema/1.0" },
-      next: { revalidate: 600 },
       signal: AbortSignal.timeout(10_000),
     });
     if (!response.ok) throw new Error(`热播请求失败：${response.status}`);

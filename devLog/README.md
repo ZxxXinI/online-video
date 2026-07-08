@@ -10,6 +10,7 @@
 | 2026-07-07 20:30 | Cinema redesign | Rebuilt the UI around a dark cinema layout inspired by Spotify and PlayStation interaction patterns. | [cinema-redesign.md](cinema-redesign.md) |
 | 2026-07-08 10:45 | Redis server cache | Added optional Redis TLS caching for hot lists, home categories, title resolve, and detail aggregation. | [redis-cache.md](redis-cache.md) |
 | 2026-07-08 11:25 | Redis TLS fix | Added `REDIS_TLS_REJECT_UNAUTHORIZED` for IP-based TLS Redis deployments with certificate hostname mismatch. | [redis-cache.md](redis-cache.md) |
+| 2026-07-08 11:52 | Next data cache fix | Disabled Next.js built-in fetch caching for large external source responses while keeping Redis as the application cache. | [redis-cache.md](redis-cache.md) |
 
 ## Module Map
 

@@ -74,7 +74,6 @@ interface RequestOptions {
   typeId?: number;
   keyword?: string;
   ids?: string;
-  revalidate?: number;
 }
 
 interface ResolveCacheValue {
@@ -85,7 +84,7 @@ interface ResolveCacheValue {
 export async function listMovies(options: RequestOptions = {}): Promise<MoviePage> {
   const sourceId = options.sourceId ?? DEFAULT_SOURCE_ID;
   // The MacCMS list action omits posters on some providers; detail keeps paging but returns card fields.
-  const response = await requestMacCms({ ...options, sourceId, action: "detail", revalidate: 300 });
+  const response = await requestMacCms({ ...options, sourceId, action: "detail" });
 
   return {
     page: response.page,
@@ -129,7 +128,6 @@ export async function searchMovies(
     action: "detail",
     keyword: keyword.trim(),
     page,
-    revalidate: 300,
   });
 
   return {
@@ -143,7 +141,7 @@ export async function searchMovies(
 }
 
 export async function getCategories(): Promise<Category[]> {
-  const response = await requestMacCms({ action: "list", revalidate: 3600 });
+  const response = await requestMacCms({ action: "list" });
   return response.class
     .map((category) => ({
       id: category.type_id,
@@ -158,7 +156,6 @@ export async function getMovieDetail(sourceId: SourceId, id: string) {
     sourceId,
     action: "detail",
     ids: id,
-    revalidate: 1800,
   });
   const movie = response.list.find(isAllowedMovie);
   return movie ? toMovieDetail(movie, sourceId) : null;
@@ -229,8 +226,8 @@ async function requestMacCms(options: RequestOptions) {
   if (options.ids) url.searchParams.set("ids", options.ids);
 
   const response = await fetch(url, {
+    cache: "no-store",
     headers: { "User-Agent": "OnlineCinema/1.0" },
-    next: { revalidate: options.revalidate ?? 300 },
     signal: AbortSignal.timeout(15_000),
   });
   if (!response.ok) throw new Error(`数据源请求失败：${response.status}`);
