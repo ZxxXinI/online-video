@@ -64,3 +64,22 @@ export function getRedisClient() {
 
   return client;
 }
+
+export async function ensureRedisClient() {
+  const redis = getRedisClient();
+  if (!redis) return null;
+
+  if (redis.status === "ready") return redis;
+
+  if (redis.status === "end") {
+    client = undefined;
+    return ensureRedisClient();
+  }
+
+  if (redis.status === "wait" || redis.status === "close") {
+    await redis.connect();
+    return redis;
+  }
+
+  return null;
+}

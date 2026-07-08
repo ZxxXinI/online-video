@@ -43,6 +43,11 @@
 - Attempted fix: Changed MacCMS and hot-source fetches to `cache: "no-store"` so Next.js does not cache raw external responses. Redis remains the explicit application cache for processed results.
 - Temporary solution: None. Redeploy the container after pulling this change.
 
+- Time: 2026-07-08 15:05
+- Symptoms: Redis could still be reached externally, but the website stopped adding new cache values after running for a while or after Redis data was cleared.
+- Attempted fix: Added `ensureRedisClient()` to reconnect or rebuild the Redis client when the cached ioredis instance is no longer `ready`. Cache reads and writes now use this helper instead of only connecting from the initial `wait` state.
+- Temporary solution: Redeploy the container after pulling this change. Existing Redis keys do not need manual migration.
+
 ## Navigation
 
 - Master doc: `devLog/README.md`
